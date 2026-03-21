@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 大会
+model Competition {
+  id        String   @id @default(uuid())
+  name      String
+  sportType String   @map("sport_type")
+  season    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  matches Match[]
+
+  @@map("competitions")
+}
+
+// チーム
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+  shortName String?  @map("short_name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  homeMatches Match[] @relation("HomeTeam")
+  awayMatches Match[] @relation("AwayTeam")
+
+  @@map("teams")
+}
+
+// 試合
+model Match {
+  id            String      @id @default(uuid())
+  competitionId String      @map("competition_id")
+  homeTeamId    String      @map("home_team_id")
+  awayTeamId    String      @map("away_team_id")
+  homeScore     Int?        @map("home_score")
+  awayScore     Int?        @map("away_score")
+  status        String      @default("scheduled")
+  startAt       DateTime    @map("start_at")
+  venue         String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  homeTeam    Team        @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam    Team        @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  @@map("matches")
+}
+
+// ユーザー
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("user") // user, organizer, admin
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
