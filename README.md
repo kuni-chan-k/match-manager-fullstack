@@ -12,7 +12,7 @@
 
 ## 技術スタック
 
-- Next.js 15 (App Router)
+- Next.js 16 (App Router)
 - React 18 / TypeScript / Tailwind CSS
 - PostgreSQL + Prisma ORM
 - JWT (jsonwebtoken + bcryptjs)
